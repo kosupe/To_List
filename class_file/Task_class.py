@@ -1,14 +1,25 @@
 import flet as ft
+from flet_core.ref import T
+from class_file.DB_class import DBClass
 
 class Task(ft.UserControl):
-    def __init__(self, task_name, task_delete):
+    def __init__(self, task_name, task_delete, check_flg, db_id):
         super().__init__()
+        self.db_id = db_id
         self.task_name   = task_name
         self.task_delete = task_delete
+        if check_flg == 0:
+            self.check_flg = False
+        else:
+            self.check_flg = True
+        
 
 
     def build(self):
-        self.display_task = ft.Checkbox(value=False, label=self.task_name)
+        def checkbox_changed(e):
+            DBClass.update_flg(flg=self.display_task.value, id=self.db_id)
+            
+        self.display_task = ft.Checkbox(label=self.task_name, value=self.check_flg, on_change=checkbox_changed)
         self.edit_name    = ft.TextField(expand=1, bgcolor=ft.colors.WHITE, border_width=1.5, focused_border_color=ft.colors.RED_400, max_length=34)
 
         self.display_view = ft.Row(
@@ -64,7 +75,9 @@ class Task(ft.UserControl):
         self.display_view.visible = True
         self.edit_view.visible = False
         self.update()
+        DBClass.update_task(task_value=self.edit_name.value, id=self.db_id)
     
     
     def delete_clicked(self, e):
         self.task_delete(self)
+        DBClass.delete(id=self.db_id)
