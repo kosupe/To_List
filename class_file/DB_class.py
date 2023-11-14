@@ -51,7 +51,11 @@ class DBClass():
         max_id = result[0][0]
         DBClass._con.commit()
         DBClass._fin_db()
-        return max_id + 1
+        try:
+            next_id = max_id + 1
+            return next_id
+        except:
+            return 1
 
     def insert(id,task_value,flg):
         DBClass._start_db()
@@ -92,7 +96,5 @@ if __name__ == "__main__":
     
     
     
-    DBClass.update_task(task_value="11:00から面接",id=1)
-
     tasks = DBClass.select_all()
     print(tasks)
